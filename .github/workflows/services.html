@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lordjun Server Pro - Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        .service-card {
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .service-card:hover {
+        transform: perspective(1000px) rotateX(-5deg) rotateY(5deg) scale(1.05);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        z-index: 10;
+    }
+
+    .phone-model-card {
+        transition: all 0.3s ease-in-out;
+        transform: scale(1);
+        border: 2px solid transparent;
+        background-color: #f9fafb;
+    }
+    .phone-model-card:hover {
+        transform: scale(1.05);
+        border-color: #3B82F6;
+        background-color: #EFF6FF;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.03);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .book-service-btn {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .book-service-btn:hover {
+        transform: translateY(-2px);
+        animation: pulse 1.5s infinite;
+    }
+    .book-service-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: all 0.6s;
+    }
+    .book-service-btn:hover::before {
+        left: 100%;
+    }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<header class="bg-blue-600 text-white py-4">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <h1 class="text-2xl font-bold">Lordjun Server Pro</h1>
+        </div>
+        <nav>
+            <ul class="flex space-x-4">
+                <li><a href="index.html" class="hover:text-blue-200 transition">Home</a></li>
+                <li><a href="services.html" class="hover:text-blue-200 transition">Services</a></li>
+                <li><a href="order.html" class="hover:text-blue-200 transition">Order</a></li>
+                <li><a href="contact.html" class="hover:text-blue-200 transition">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="container mx-auto px-4 py-8">
+    <h2 class="text-4xl font-bold text-center mb-12 text-blue-800">Our Services</h2>
+
+    <div id="services-container" class="grid md:grid-cols-3 gap-6">
+        <!-- Service Cards will be dynamically generated here -->
+    </div>
+
+    <div id="phone-selection" class="hidden mt-12 bg-white rounded-lg shadow-md p-8">
+        <h3 id="selected-service-title" class="text-2xl font-bold mb-6 text-center"></h3>
+        <div class="grid md:grid-cols-3 gap-4" id="phone-models">
+            <!-- Phone models will be dynamically generated here -->
+        </div>
+        <div id="price-display" class="mt-8 text-center bg-blue-100 p-4 rounded-lg hidden">
+            <p class="text-xl font-semibold">Estimated Price: <span id="service-price">0 GHS</span></p>
+            <p id="service-details" class="text-sm text-gray-600 mt-2"></p>
+            <a href="order.html" id="book-service" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                Proceed to Order
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-blue-800 text-white py-6">
+    <div class="container mx-auto text-center">
+        <p>&copy; 2024 Lordjun Server Pro. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    const services = [
+    {
+        id: 'screen_repair',
+        name: 'Screen Repair',
+        icon: 'monitor',
+        description: 'Professional screen replacement for all iPhone models',
+        features: [
+            'Original quality displays',
+            '30-minute repair time',
+            'Free diagnostic check',
+            'Warranty included'
+        ],
+        pricingDetails: {
+            iphone_5s: { price: 110, warranty: 'No warranty' },
+            iphone_6:{ price: 120, warranty: 'No warranty' },
+            iphone_6s:{price: 120, warranty:'No warranty'},
+            iphone_7: { price: 180, warranty: 'No warranty' },
+            iphone_7plus: { price: 200, warranty: 'No warranty' },
+            iphone_8: { price: 200, warranty: 'No warranty' },
+            iphone_8plus: { price: 200, warranty: 'No warranty' },
+            iphone_se: { price: 250, warranty: 'No warranty' },
+            iphone_x: { price: 300, warranty: 'No warranty' },
+            iphone_Xr: { price: 400, warranty: 'No warranty' },
+            iphone_11: { price: 400, warranty: 'No warranty' },
+            iphone_11pro: { price: 550, warranty: 'No warranty' },
+            iphone_11promax: { price: 600, warranty: 'No warranty' },
+            iphone_12: { price: 550, warranty: 'No warranty' },
+            iphone_12mini: { price: 600, warranty: 'No warranty' },
+            iphone_12pro: { price: 700, warranty: 'No warranty' },
+            iphone_12promax: { price: 1200, warranty: 'No warranty' },
+            iphone_13: { price: 3200, warranty: 'No warranty' },
+            iphone_13mini: { price: 1700, warranty: 'No warranty' },
+            iphone_13pro: { price: 3000, warranty: 'No warranty' },
+            iphone_13promax: { price: 4000, warranty: 'No warranty' },
+            iphone_14plus: { price: 4500, warranty: 'No warranty' },
+            iphone_14pro: { price: 4500, warranty: 'No warranty' },
+            iphone_14promax: { price: 4500, warranty: 'No warranty' },
+            iphone_15: { price: 4500, warranty: 'No warranty' },
+            iphone_15pro: { price: 4500, warranty: 'No warranty' },
+            iphone_15promax: { price: 4500, warranty: 'No warranty' },
+        }
+    },
+    {
+        id: 'icloud_bypass',
+        name: 'iCloud Bypass',
+        icon: 'unlock',
+        description: 'Quick and secure iCloud bypass solutions for various iPhone models',
+        features: [
+            '99% success rate',
+            'Works with all iOS versions',
+            'No technical skills required',
+            'Permanent unlock'
+        ],
+        pricingDetails: {
+            iphone_5s: { price: 70, warranty: 'No warranty' },
+            iphone_6:{ price: 140, warranty: 'No warranty' },
+            iphone_6s:{price: 240, warranty:'No warranty'},
+            iphone_7: { price: 350, warranty: 'No warranty' },
+            iphone_7plus: { price: 350, warranty: 'No warranty' },
+            iphone_8: { price: 420, warranty: 'No warranty' },
+            iphone_8plus: { price: 450, warranty: 'No warranty' },
+            iphone_se: { price: 210, warranty: 'No warranty' },
+            iphone_x: { price: 560, warranty: 'No warranty' },
+        }
+    },
+    {
+        id: 'windows_recovery',
+        name: 'Windows Installation',
+        icon: 'database',
+        description: 'Quick and fresh installation of windows for your laptop',
+        features: [
+            'Virus-free OS installation',
+            'Latest Windows version',
+            'Data backup option',
+            '30-day support'
+        ],
+        pricingDetails: {
+            windows_7:{price: 700, warranty: '30 days'},
+            windows_8:{price: 840, warranty: '30 days'},
+            windows_10:{price: 1120, warranty: '30 days'},
+            windows_11:{price: 1120, warranty: '30 days'},
+        }
+    },
+    {
+        id: 'battery_replacement',
+        name: 'Battery Replacement',
+        icon: 'battery',
+        description: 'High-quality battery replacements for iPhone models',
+        features: [
+            'OEM quality batteries',
+            'Quick 45-minute service',
+            'Battery health check',
+            '6-month warranty'
+        ],
+        pricingDetails: {
+            iphone_x: { price: 1400, warranty: '6 months' },
+            iphone_11: { price: 1680, warranty: '6 months' },
+            iphone_12: { price: 2100, warranty: '6 months' },
+            iphone_13: { price: 2520, warranty: '6 months' },
+            iphone_14: { price: 2800, warranty: '6 months' },
+            iphone_15: { price: 3500, warranty: '6 months' }
+        }
+    },
+    {
+        id: 'carrier_unlock',
+        name: 'Carrier Unlock',
+        icon: 'globe',
+        description: 'Permanent carrier unlock for various iPhone and Android models',
+        features: [
+            '100% factory unlock',
+            'Works worldwide',
+            'No jailbreak required',
+            'Instant digital delivery'
+        ],
+        pricingDetails: {
+            android_budget: { price: 150, warranty: '30 days' },
+            android_mid_range: { price: 150, warranty: '30 days' },
+            android_flagship: { price: 130, warranty: '30 days' },
+            att_unlock: { price: 300, warranty: '30 days' },
+            tmobile_unlock: { price: 1500, warranty: '30 days' },
+            verizon_unlock: { price: 1820, warranty: '30 days' },
+            sprint_unlock: { price: 1960, warranty: '30 days' },
+            virgin_unlock: { price: 1400, warranty: '30 days' },
+            o2_unlock: { price: 1300, warranty: '30 days' },
+            skytel_unlock: { price: 1340, warranty: '30 days' },
+            telefonica_unlock: { price: 2520, warranty: '30 days' },
+            ericsson_unlock: { price: 2660, warranty: '30 days' },
+            huawei_unlock: { price: 2800, warranty: '30 days' },
+            sony_unlock: { price: 2940, warranty: '30 days' },
+            nokia_unlock: { price: 3080, warranty: '30 days' },
+            alcatel_unlock: { price: 3220, warranty: '30 days' },
+            mobilink_unlock: { price: 3360, warranty: '30 days' },
+        }
+    },
+    {
+        id: 'gevey_sim',
+        name: 'Gevey SIM Unlock',
+        icon: 'credit-card',
+        description: 'USe a stable or normal gevey SIM for your iPhone',
+        features: [
+            'Supports multiple carriers',
+            'No programming required',
+            'Works with latest iOS',
+            'Quick activation'
+        ],
+        pricingDetails: {
+            stable_gevey: { price: 250, warranty: 'No warranty' },
+            normal_gevey: { price: 140, warranty: 'No warranty' }
+        }
+    },
+    {
+        id: 'laptop_screen_repair',
+        name: 'Laptop Screen Repair',
+        icon: 'tablet',
+        description: 'Professional screen replacement for various laptop brands',
+        features: [
+            'High-quality replacement screens',
+            'Color calibration included',
+            '90-day warranty',
+            'Same-day service'
+        ],
+        pricingDetails: {
+            dell_budget: { price: 1400, warranty: '3 months' },
+            dell_mid_range: { price: 2100, warranty: '3 months' },
+            hp_budget: { price: 1540, warranty: '3 months' },
+            hp_mid_range: { price: 2240, warranty: '3 months' },
+            lenovo_budget: { price: 1680, warranty: '3 months' },
+            lenovo_mid_range: { price: 2380, warranty: '3 months' },
+            macbook_13: { price: 4200, warranty: '6 months' },
+            macbook_15: { price: 4900, warranty: '6 months' }
+        }
+    },
+    {
+        id: 'phone_water_damage',
+        name: 'Water Damage Repair',
+        icon: 'droplet',
+        description: 'Comprehensive water damage treatment and component cleaning',
+        features: [
+            'Advanced cleaning technology',
+            'Component-level diagnosis',
+            'Data recovery option',
+            'Quick turnaround'
+        ],
+        pricingDetails: {
+            iphone_5s: { price: 80, warranty: 'No warranty' },
+            iphone_6:{ price: 120, warranty: 'No warranty' },
+            iphone_6s:{price: 120, warranty:'No warranty'},
+            iphone_7: { price: 200, warranty: 'No warranty' },
+            iphone_7plus: { price: 200, warranty: 'No warranty' },
+            iphone_8: { price: 200, warranty: 'No warranty' },
+            iphone_8plus: { price: 200, warranty: 'No warranty' },
+            iphone_se: { price: 210, warranty: 'No warranty' },
+            iphone_x: { price: 250, warranty: 'No warranty' },
+            iphone_Xr: { price: 300, warranty: 'No warranty' },
+            iphone_11: { price: 350, warranty: 'No warranty' },
+            iphone_11pro: { price: 350, warranty: 'No warranty' },
+            iphone_11promax: { price: 400, warranty: 'No warranty' },
+            iphone_12: { price: 400, warranty: 'No warranty' },
+            iphone_12mini: { price: 400, warranty: 'No warranty' },
+            iphone_12pro: { price: 400, warranty: 'No warranty' },
+            iphone_12promax: { price: 400, warranty: 'No warranty' },
+            iphone_13: { price: 400, warranty: 'No warranty' },
+            iphone_13mini: { price: 400, warranty: 'No warranty' },
+            iphone_13pro: { price: 450, warranty: 'No warranty' },
+            iphone_13promax: { price: 450, warranty: 'No warranty' },
+            iphone_14plus: { price: 450, warranty: 'No warranty' },
+            iphone_14pro: { price: 450, warranty: 'No warranty' },
+            iphone_14promax: { price: 450, warranty: 'No warranty' },
+            iphone_15: { price: 450, warranty: 'No warranty' },
+            iphone_15pro: { price: 450, warranty: 'No warranty' },
+            iphone_15promax: { price: 450, warranty: 'No warranty' },
+        }
+    }
+];
+
+    const servicesContainer = document.getElementById('services-container');
+    const phoneSelection = document.getElementById('phone-selection');
+    const selectedServiceTitle = document.getElementById('selected-service-title');
+    const phoneModelsContainer = document.getElementById('phone-models');
+    const priceDisplay = document.getElementById('price-display');
+    const servicePrice = document.getElementById('service-price');
+    const serviceDetails = document.getElementById('service-details');
+
+    function renderServices() {
+        servicesContainer.innerHTML = services.map(service => `
+            <div class="service-card bg-white rounded-lg shadow-md p-6 text-center hover:shadow-xl transition" 
+                 data-service-id="${service.id}">
+                <div class="mb-4 flex justify-center">
+                    <i data-feather="${service.icon}" class="w-16 h-16 text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">${service.name}</h3>
+                <p class="text-gray-600 mb-4">${service.description}</p>
+                <button class="book-service-btn w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    Book Service
+                </button>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('book-service-btn')) {
+                    showPhoneModels(card.dataset.serviceId);
+                }
+            });
+
+            const bookButton = card.querySelector('.book-service-btn');
+            bookButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showPhoneModels(card.dataset.serviceId);
+            });
+        });
+
+        feather.replace();
+    }
+
+    function showPhoneModels(serviceId) {
+        const selectedService = services.find(s => s.id === serviceId);
+        selectedServiceTitle.textContent = `Select Phone Model for ${selectedService.name}`;
+
+        phoneModelsContainer.innerHTML = Object.entries(selectedService.pricingDetails).map(([modelId, pricing]) => `
+            <div class="phone-model-card bg-gray-100 rounded-lg p-4 text-center cursor-pointer hover:bg-blue-100 transition" 
+                 data-service-id="${serviceId}" data-model-id="${modelId}">
+                <p class="text-lg font-semibold">${modelId.replace('_', ' ').toUpperCase()}</p>
+                <p class="text-gray-600">${pricing.price} GHS</p>
+            </div>
+        `).join('');
+
+        phoneSelection.classList.remove('hidden');
+        serviceDetails.textContent = `${selectedService.description} | Features: ${selectedService.features.join(', ')}`;
+
+        document.querySelectorAll('.phone-model-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const serviceId = e.target.closest('.phone-model-card').dataset.serviceId;
+                const modelId = e.target.closest('.phone-model-card').dataset.modelId;
+                const selectedService = services.find(s => s.id === serviceId);
+                const pricing = selectedService.pricingDetails[modelId];
+
+                sessionStorage.setItem('selectedService', selectedService.name);
+                sessionStorage.setItem('selectedPhoneModel', modelId.replace('_', ' ').toUpperCase());
+                sessionStorage.setItem('selectedPrice', `${pricing.price} GHS`);
+
+                servicePrice.textContent = `${pricing.price} GHS`;
+                priceDisplay.classList.remove('hidden');
+            });
+        });
+    }
+
+    renderServices();
+</script>
+</body>
+</html>
