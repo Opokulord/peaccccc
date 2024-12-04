@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Your Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+    </style>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+    <header class="bg-blue-600 text-white py-4 shadow-md">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img id="logo-image" src="pictures/IMG_0168-removebg-preview.png" alt="Phone Repair Services Logo" class="mr-3 w-12 h-12">
+                <h1 class="text-2xl font-bold">Phone Repair Services</h1>
+            </div>
+            <button id="edit-order" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                <i class="fas fa-edit mr-2"></i>Edit Order
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2">Order Details</h2>
+            
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="font-semibold text-gray-600">Name</p>
+                        <p id="review-name" class="text-lg"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-600">Email</p>
+                        <p id="review-email" class="text-lg"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="font-semibold text-gray-600">Phone Number</p>
+                        <p id="review-phone-number" class="text-lg"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-600">Service</p>
+                        <p id="review-service" class="text-lg"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="font-semibold text-gray-600">Phone Model</p>
+                        <p id="review-phone-model" class="text-lg"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-600">Price</p>
+                        <p id="review-price" class="text-lg font-bold text-green-600"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="font-semibold text-gray-600">Order Date</p>
+                        <p id="order-date" class="text-lg"></p>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-600">Receipt Code</p>
+                        <p id="receipt-code" class="text-lg font-mono text-blue-600 tracking-wider"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-between items-center">
+                <div id="order-confirmation" class="text-green-600 font-semibold hidden">
+                    <i class="fas fa-check-circle mr-2"></i>Order Confirmed
+                </div>
+                <div class="flex space-x-4">
+                    <button id="finalize-receipt" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition flex items-center">
+                        <i class="fas fa-file-invoice mr-2"></i>Generate Receipt
+                    </button>
+                    <button id="send-email" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition flex items-center">
+                        <i class="fas fa-envelope mr-2"></i>Email Receipt
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="email-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+                <h2 class="text-2xl font-bold mb-4">Email Receipt</h2>
+                <input type="email" id="email-input" placeholder="Enter your email" class="w-full px-4 py-2 border rounded-lg mb-4">
+                <div class="flex justify-between">
+                    <button id="cancel-email" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">Cancel</button>
+                    <button id="confirm-email" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Send</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-200 py-4 text-center">
+        <p class="text-gray-600">© 2024 Phone Repair Services. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        // Unique Receipt Code Generator
+        function generateReceiptCode() {
+            const timestamp = Date.now().toString(36);
+            const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+            return `PR-${timestamp.toUpperCase()}-${randomPart}`;
+        }
+
+        // Logo Generator
+        function createLogo(img) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 50;
+            canvas.height = 50;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#2563EB'; // Tailwind blue-600
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Orbitron, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('PR', canvas.width / 2, canvas.height / 2);
+
+            // Convert canvas to data URL
+            img.src = canvas.toDataURL();
+        }
+
+        window.onload = () => {
+            // Create Logo
+            const logoImg = document.getElementById('logo-image');
+            createLogo(logoImg);
+
+            const orderData = JSON.parse(sessionStorage.getItem('orderData'));
+            if (!orderData) {
+                alert('No order data found. Please start the process again.');
+                window.location.href = 'order.html';
+                return;
+            }
+
+            // Generate Unique Receipt Code
+            const receiptCode = generateReceiptCode();
+            document.getElementById('receipt-code').textContent = receiptCode;
+
+            // Set Order Date
+            const orderDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('order-date').textContent = orderDate;
+
+            // Populate review fields
+            document.getElementById('review-name').textContent = orderData.name;
+            document.getElementById('review-email').textContent = orderData.email;
+            document.getElementById('review-phone-number').textContent = orderData.phone_number;
+            document.getElementById('review-service').textContent = orderData.service;
+            document.getElementById('review-phone-model').textContent = orderData.phone_model;
+            document.getElementById('review-price').textContent = orderData.price;
+
+            // Edit Order Button
+            document.getElementById('edit-order').addEventListener('click', () => {
+                window.location.href = 'order.html';
+            });
+
+            // Generate Receipt
+            document.getElementById('finalize-receipt').addEventListener('click', () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Professional Receipt Design
+                doc.setFontSize(20);
+                doc.text('Phone Repair Services', 20, 20);
+                doc.setFontSize(12);
+                doc.text(`Receipt Code: ${receiptCode}`, 20, 30);
+                doc.text(`Order Date: ${orderDate}`, 20, 40);
+                doc.text('Order Receipt', 20, 50);
+                
+                doc.setLineWidth(0.5);
+                doc.line(20, 55, 190, 55);
+
+                // Add logo to PDF
+                const logoCanvas = document.createElement('canvas');
+                logoCanvas.width = 50;
+                logoCanvas.height = 50;
+                const ctx = logoCanvas.getContext('2d');
+                ctx.fillStyle = '#2563EB';
+                ctx.fillRect(0, 0, logoCanvas.width, logoCanvas.height);
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 24px Orbitron, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('PR', logoCanvas.width / 2, logoCanvas.height / 2);
+                const logoDataUrl = logoCanvas.toDataURL();
+                doc.addImage(logoDataUrl, 'PNG', 160, 10, 30, 30);
+
+                doc.text(`Name: ${orderData.name}`, 20, 70);
+                doc.text(`Email: ${orderData.email}`, 20, 80);
+                doc.text(`Phone Number: ${orderData.phone_number}`, 20, 90);
+                doc.text(`Service: ${orderData.service}`, 20, 100);
+                doc.text(`Phone Model: ${orderData.phone_model}`, 20, 110);
+                doc.text(`Price: ${orderData.price}`, 20, 120);
+
+                doc.setFontSize(10);
+                doc.text('Thank you for your business!', 20, 140);
+                
+                doc.save(`receipt-${receiptCode}.pdf`);
+                document.getElementById('order-confirmation').classList.remove('hidden');
+            });
+
+            // Email Receipt Modal
+            const emailModal = document.getElementById('email-modal');
+            const sendEmailBtn = document.getElementById('send-email');
+            const cancelEmailBtn = document.getElementById('cancel-email');
+            const confirmEmailBtn = document.getElementById('confirm-email');
+
+            sendEmailBtn.addEventListener('click', () => {
+                emailModal.classList.remove('hidden');
+                emailModal.classList.add('flex');
+            });
+
+            cancelEmailBtn.addEventListener('click', () => {
+                emailModal.classList.add('hidden');
+                emailModal.classList.remove('flex');
+            });
+
+            confirmEmailBtn.addEventListener('click', () => {
+                const emailInput = document.getElementById('email-input');
+                if (emailInput.value) {
+                    // In a real application, this would trigger an email service
+                    alert(`Receipt ${receiptCode} will be sent to ${emailInput.value}`);
+                    emailModal.classList.add('hidden');
+                    emailModal.classList.remove('flex');
+                } else {
+                    alert('Please enter a valid email address');
+                }
+            });
+        };
+    </script>
+</body>
+</html>
